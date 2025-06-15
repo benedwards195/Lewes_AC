@@ -1,0 +1,31 @@
+/* input-field.css */
+.input-field {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.input-field label {
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.input-field input {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.input-field input:focus {
+  outline: none;
+  border-color: #0077ff;
+  box-shadow: 0 0 0 2px rgba(0, 119, 255, 0.2);
+}
+
+.input-field .error {
+  color: #d93025;
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+}

@@ -1,0 +1,72 @@
+.home-container {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Banner */
+
+
+.club-name {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.signout-link {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Red Divider */
+.red-divider {
+  height: 4px;
+  background-color: red;
+}
+
+/* Navbar */
+.navbar {
+  background-color: #f8f8f8;
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+b {
+    color: blue;
+}
+
+/* Welcome */
+.welcome {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.welcome a {
+  display: inline-block;
+  margin-top: 1rem;
+  background-color: #25D366;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+/* Subheadings */
+.sections {
+  margin-top: 3rem;
+  padding-left: 1rem;
+}
+
+.sections h3 {
+  margin: 0.8rem 0;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.2rem;
+}

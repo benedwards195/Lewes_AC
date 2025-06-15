@@ -1,0 +1,27 @@
+.date {
+    font-weight: bold;
+}
+
+b {
+    color: black;
+}
+
+select {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.register button {
+  margin-top: .5rem;
+}
+
+input {
+  margin-left: 1rem;
+  width: 80%;
+  /* max-width: 400px; Optional max width */
+  box-sizing: border-box; /* So padding doesn't add to total width */
+}

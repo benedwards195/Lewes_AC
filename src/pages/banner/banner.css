@@ -1,0 +1,22 @@
+.home-container {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.banner {
+  background-color: #003366;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.club-name {
+  margin: 0;
+  font-size: 1.8rem;
+}
+.signout-link:hover {
+  color: violet;
+}

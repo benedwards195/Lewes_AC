@@ -1,0 +1,178 @@
+/* .signup {
+    color: red;
+}
+li {
+    
+    font-weight: bold;
+} */
+/* .register {
+    background-color: green;
+} */
+/* .roster {
+background-color: grey;
+color: white
+} */
+
+/* li {
+  display: flex;
+  justify-content: space-between; /* pushes content to edges */
+  /* align-items: center;
+  font-weight: bold;
+  margin-bottom: 8px;
+} */ 
+
+ /* .actions {
+  display: flex;
+  gap: 10px; space between Edit and Remove 
+}  */
+
+/* .edit {
+  background-color: lightblue;
+  color: black;
+  font-weight: bold;
+  border: none;
+  padding: 5px 10px;
+}
+
+.remove {
+  background-color: crimson;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 5px 10px;
+}
+
+.edit:hover, .remove:hover {
+    background-color: yellow;
+    color: black;
+    text-decoration: underline;
+}
+h1 {
+  text-align: center;
+} */
+
+.register {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #f3f4f6; /* light gray */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.register input {
+  width: 75%;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.register input:focus {
+  border-color: #2563eb; /* blue */
+  outline: none;
+  box-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
+}
+
+.register button {
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register button:first-child {
+  background-color: #2563eb;
+  color: white;
+  margin-right: 0.5rem;
+}
+
+.register button:first-child:hover {
+  background-color: #1e40af;
+}
+
+.register button:last-child {
+  background-color: #6b7280; /* gray */
+  color: white;
+}
+
+.register button:last-child:hover {
+  background-color: #4b5563;
+}
+
+.roster {
+  background-color: #374151; 
+  color: white;
+  border-radius: 4px;
+  padding: 1rem;
+  max-height: 87.5px;
+  overflow-y: auto;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.roster li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-weight: bold;
+}
+
+.entry {
+  background-color: lightblue;
+  margin-left: 5px;
+}
+
+.entry:hover {
+  background-color: lightgreen;
+  color: blue;
+  text-decoration: underline;
+}
+
+/* .remove {
+  background-color: red;
+  color: white;
+} */
+
+.remove:hover {
+  color: black;
+  text-decoration: underline;
+}
+
+.actions button {
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.actions .edit {
+  background-color: #60a5fa !important; /* light blue */
+  color: black;
+  margin-right: 0.5rem;
+}
+
+.actions .edit:hover { 
+  background-color: white !important;
+  color: red;
+  text-decoration: underline;
+}
+
+.actions .remove {
+  background-color: #dc2626 !important; /* red */
+  color: white;
+}
+
+.actions .remove:hover {
+  background-color: #facc15 !important;
+  color: black;
+  text-decoration: underline;
+}
+
