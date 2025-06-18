@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signUpUser } from "../../../src/firebase";
 import { InputField } from "../input-field/input-field";
+import './Registration.css';
 
 
 export const Registration = () => {
@@ -16,6 +17,7 @@ export const Registration = () => {
     confirmPassword: ""
 })
 
+const navigate = useNavigate();
 const [errors, setErrors] = useState({})
 
  const handleChange = (event) => {
@@ -29,7 +31,7 @@ const [errors, setErrors] = useState({})
         if (!data.username) newErrors.username = "Username required";
         if (!data.address) newErrors.address = "Address required";
         if (data.postcode.length < 5 || data.postcode.length > 7) newErrors.postcode = "Invalid Postcode";
-        if (!data.email.includes("@")) newErrors.username = "Invalid email"
+        if (!data.email.includes("@")) newErrors.email = "Invalid email"
         if (data.password.length < 6) newErrors.password = "Min 6 characters";
         if (data.password !== data.confirmPassword) newErrors.confirmPassword = "Passwords don't match";
         setErrors(newErrors);
@@ -44,24 +46,32 @@ const [errors, setErrors] = useState({})
 
   try {
     const user = await signUpUser(
-      data.email,
-      data.password,
-      data.username,
-      data.address,
-      data.postcode
+       data.email,
+       data.password,
+       data.username,
+       data.address,
+       data.postcode,
+       data.firstName,
+       data.surname
     );
 
 
-    localStorage.setItem("user", JSON.stringify(user));
+    // localStorage.setItem("user", JSON.stringify(user));
     console.log("Registered user:", user);
     alert("User registered!");
     // Optionally redirect after signup
-        // navigate('/home');
+      navigate('/home');
 
   } catch (error) {
-    console.error("Registration error:", error.message);
-    alert("Failed to register user.");
+  if (error.code === "auth/email-already-in-use") {
+    alert("That email is already in use.");
+  } else if (error.code === "auth/weak-password") {
+    alert("Password should be at least 6 characters.");
+  } else {
+    alert("Failed to register user. Please try again.");
   }
+}
+
     }
 
     return (
@@ -77,7 +87,7 @@ const [errors, setErrors] = useState({})
         <InputField label="Email" name="email" value={data.email} onChange={handleChange} error={errors.email} />
         <InputField label="Password" name="password" type="password" value={data.password} onChange={handleChange} error={errors.password} />
         <InputField label="Confirm Password" name="confirmPassword" type="password" value={data.confirmPassword} onChange={handleChange} error={errors.confirmPassword} />
-        <button type="submit">Register</button>
+        <button className="member-signup" type="submit">Register</button>
         <p>Already have an account? <Link to="/login">Login</Link></p>
       </form>
     </div>

@@ -1,7 +1,11 @@
+import { useUser } from '../../components/UserContext';
 import './home.css';
 
 export const Home = () => {
+  const { user, profile, loading } = useUser();
+   if (loading) return <p>Loading...</p>;
     return (
+      
     <div className="home-container">
       {/* Banner */}
       {/* <div className="banner">
@@ -14,7 +18,7 @@ export const Home = () => {
 
       {/* Welcome Section */}
       <section className="welcome">
-        <h2>Welcome to Lewes Running Club</h2>
+        <h2>Welcome, {profile?.firstName || user?.email}, to Lewes Athletics Club</h2>
         <p>Please send suggestions for improvement or requests of help to <b>runningfit@lewesac.co.uk</b></p>
         <a href="https://wiki.lewesac.co.uk/whatsapp-groups-directory" target="_blank" rel="noopener noreferrer">
           Join our WhatsApp Group

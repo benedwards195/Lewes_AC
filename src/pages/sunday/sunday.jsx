@@ -4,7 +4,9 @@ import {
     collection,
     deleteDoc,
     doc,
+    getDoc,
     getDocs,
+    setDoc,
     updateDoc
 } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
@@ -17,21 +19,39 @@ export const Sunday = () => {
         // const [members, setMembers] = useState('');
         const [input, setInput] = useState('');
         const [editingId, setEditingId] = useState(null);
-
         const colRef = collection(db, 'sunday-names');
-    
-        useEffect(() => {
-        const fetchNames = async () => {
-      const snapshot = await getDocs(colRef);
-      const loaded = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      dispatch({ type: 'LOAD', payload: loaded });
-    };
-
-    fetchNames();
-  }, []);
+      
+       useEffect(() => {
+         const fetchAndMaybeReset = async () => {
+           const today = new Date().toISOString().split('T')[0]; 
+           const configDoc = doc(db, 'config', 'resetDates');
+           const configSnap = await getDoc(configDoc);
+           const lastReset = configSnap.exists() ? configSnap.data().sunday: null;
+       
+           if (lastReset !== today) {
+             // Reset logic
+             const snapshot = await getDocs(colRef);
+             const batchDeletes = snapshot.docs.map(docItem => deleteDoc(doc(db, 'sunday-names', docItem.id)));
+             await Promise.all(batchDeletes);
+       
+             // Update reset date
+             await setDoc(configDoc, { sunday: today }, { merge: true });
+       
+             // Empty local list
+             dispatch({ type: 'LOAD', payload: [] });
+           } else {
+             // Just load the list
+             const snapshot = await getDocs(colRef);
+             const loaded = snapshot.docs.map(doc => ({
+               id: doc.id,
+               ...doc.data()
+             }));
+             dispatch({ type: 'LOAD', payload: loaded });
+           }
+         };
+       
+         fetchAndMaybeReset();
+       }, []);
 
 
     

@@ -1,14 +1,18 @@
+import { addDoc, collection } from 'firebase/firestore';
 import { useState } from 'react';
+import { db } from '../../firebase';
 import './tuesday.css';
+
+
 const sessionsData = [
-  { id: 1, coach: 'Anne', distance: '5km', capacity: 12, signedUp: 0 },
-  { id: 2, coach: 'Bob', distance: '8km', capacity: 12, signedUp: 0 },
-  { id: 3, coach: 'Charlie', distance: '10km', capacity: 12, signedUp: 0 },
-  { id: 4, coach: 'Mark', distance: '5km', capacity: 12, signedUp: 0 },
-  { id: 5, coach: 'Sally', distance: '8km', capacity: 12, signedUp: 0 },
-  { id: 6, coach: 'Kate', distance: '10km', capacity: 12, signedUp: 0 },
-  { id: 7, coach: 'David', distance: '5km', capacity: 12, signedUp: 0 },
-  { id: 8, coach: 'Fran', distance: '8km', capacity: 12, signedUp: 0 }
+  { id: 1, coach: 'Anne', distance: '5km', capacity: 12, signedUp: 0, runners: [] },
+  { id: 2, coach: 'Bob', distance: '8km', capacity: 12, signedUp: 0, runners: [] },
+  { id: 3, coach: 'Charlie', distance: '10km', capacity: 12, signedUp: 0, runners: [] },
+  { id: 4, coach: 'Mark', distance: '5km', capacity: 12, signedUp: 0, runners: []},
+  { id: 5, coach: 'Sally', distance: '8km', capacity: 12, signedUp: 0, runners: [] },
+  { id: 6, coach: 'Kate', distance: '10km', capacity: 12, signedUp: 0, runners: [] },
+  { id: 7, coach: 'David', distance: '5km', capacity: 12, signedUp: 0, runners: [] },
+  { id: 8, coach: 'Fran', distance: '8km', capacity: 12, signedUp: 0, runners: [] }
 ];
 
 
@@ -17,13 +21,22 @@ export const Tuesday = () => {
 const [sessions, setSessions] = useState(sessionsData); 
 const [selectedSessionId, setSelectedSessionId] = useState('');
 const [runnerName, setRunnerName] = useState('');
+const [confirmation, setConfirmation] = useState('');
 
-const handleSignup = () => {
-    if (!selectedSessionId || !runnerName.trim()) return;
+const tuesdaySignupsRef = collection(db, 'tuesday-signups');
 
-    setSessions(prev =>
-      prev.map(session =>
-        session.id === parseInt(selectedSessionId) && session.signedUp < session.capacity
+
+const handleSignup = async () => {
+  if (!selectedSessionId || !runnerName.trim()) return;
+
+  const selectedSession = sessions.find(
+    (session) => session.id === parseInt(selectedSessionId)
+  );
+
+  if (selectedSession && selectedSession.signedUp < selectedSession.capacity) {
+    setSessions((prev) =>
+      prev.map((session) =>
+        session.id === selectedSession.id
           ? {
               ...session,
               signedUp: session.signedUp + 1,
@@ -33,10 +46,26 @@ const handleSignup = () => {
       )
     );
 
-    // Clear form fields
-    setRunnerName('');
-    setSelectedSessionId('');
-  };
+    setConfirmation(`Congratulations, you are successfully registered with Coach ${selectedSession.coach}.`);
+
+    // ✅ Post to Firestore
+    try {
+      await addDoc(tuesdaySignupsRef, {
+        name: runnerName.trim(),
+        sessionId: selectedSession.id,
+        coach: selectedSession.coach,
+        distance: selectedSession.distance,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error saving signup to Firestore:', error);
+    }
+  }
+
+  setRunnerName('');
+  setSelectedSessionId('');
+};
+
 
     return (
         <>
@@ -83,6 +112,8 @@ NB: headphones and earbuds are not allowed on club runs.</li>
         <button onClick={handleSignup} disabled={!selectedSessionId}>
           Sign Up
         </button>
+        {confirmation && <p className="confirmation">{confirmation}</p>}
+
         </div>
         </>
     )

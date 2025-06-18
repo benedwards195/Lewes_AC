@@ -25,3 +25,10 @@ input {
   /* max-width: 400px; Optional max width */
   box-sizing: border-box; /* So padding doesn't add to total width */
 }
+
+.confirmation {
+  margin-top: 1rem;
+  color: darkblue;
+  font-weight: bold;
+  background-color: lightgreen;
+}

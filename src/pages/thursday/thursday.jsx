@@ -1,10 +1,12 @@
 import {
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    getDocs,
-    updateDoc
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc
 } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
 import { TrainingContext } from '../../components/TrainingContext';
@@ -22,17 +24,36 @@ export const Thursday = () => {
 
 
     useEffect(() => {
-      const fetchNames = async () => {
-      const snapshot = await getDocs(colRef);
-      const loaded = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      dispatch({ type: 'LOAD', payload: loaded });
-    };
-
-    fetchNames();
-  }, []);
+      const fetchAndMaybeReset = async () => {
+        const today = new Date().toISOString().split('T')[0]; 
+        const configDoc = doc(db, 'config', 'resetDates');
+        const configSnap = await getDoc(configDoc);
+        const lastReset = configSnap.exists() ? configSnap.data().thursday : null;
+    
+        if (lastReset !== today) {
+          // Reset logic
+          const snapshot = await getDocs(colRef);
+          const batchDeletes = snapshot.docs.map(docItem => deleteDoc(doc(db, 'names-thursday', docItem.id)));
+          await Promise.all(batchDeletes);
+    
+          // Update reset date
+          await setDoc(configDoc, { thursday: today }, { merge: true });
+    
+          // Empty local list
+          dispatch({ type: 'LOAD', payload: [] });
+        } else {
+          // Just load the list
+          const snapshot = await getDocs(colRef);
+          const loaded = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          dispatch({ type: 'LOAD', payload: loaded });
+        }
+      };
+    
+      fetchAndMaybeReset();
+    }, []);
 
     const handleSubmit = async () => {
         if (names.length >= 24) {
