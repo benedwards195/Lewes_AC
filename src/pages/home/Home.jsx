@@ -1,4 +1,5 @@
 import { useUser } from '../../components/UserContext';
+import logo from '../../images/lewes-ac.jpg.png';
 import './home.css';
 
 export const Home = () => {
@@ -18,7 +19,15 @@ export const Home = () => {
 
       {/* Welcome Section */}
       <section className="welcome">
-        <h2>Welcome, {profile?.firstName || user?.email}, to Lewes Athletics Club</h2>
+        <h2>Welcome, {profile?.firstName || user?.email}, to Lewes Athletics Club <img 
+                src={logo} 
+                alt="Lewes AC logo" 
+                style={{
+                    height: '60px',
+                    marginLeft: '10px',
+                    verticalAlign: 'middle'
+                }} 
+            /></h2>
         <p>Please send suggestions for improvement or requests of help to <b>runningfit@lewesac.co.uk</b></p>
         <a href="https://wiki.lewesac.co.uk/whatsapp-groups-directory" target="_blank" rel="noopener noreferrer">
           Join our WhatsApp Group
