@@ -15,43 +15,55 @@ import { db } from '../../firebase';
 import './sunday.css';
 
 export const Sunday = () => {
-    const {names, dispatch} = useContext(TrainingContext);
-        // const [members, setMembers] = useState('');
+    const {state, dispatch} = useContext(TrainingContext);
+        const names = state.sunday;
         const [input, setInput] = useState('');
         const [editingId, setEditingId] = useState(null);
         const colRef = collection(db, 'sunday-names');
       
-       useEffect(() => {
-         const fetchAndMaybeReset = async () => {
-           const today = new Date().toISOString().split('T')[0]; 
-           const configDoc = doc(db, 'config', 'resetDates');
-           const configSnap = await getDoc(configDoc);
-           const lastReset = configSnap.exists() ? configSnap.data().sunday: null;
-       
-           if (lastReset !== today) {
-             // Reset logic
-             const snapshot = await getDocs(colRef);
-             const batchDeletes = snapshot.docs.map(docItem => deleteDoc(doc(db, 'sunday-names', docItem.id)));
-             await Promise.all(batchDeletes);
-       
-             // Update reset date
-             await setDoc(configDoc, { sunday: today }, { merge: true });
-       
-             // Empty local list
-             dispatch({ type: 'LOAD', payload: [] });
-           } else {
-             // Just load the list
-             const snapshot = await getDocs(colRef);
-             const loaded = snapshot.docs.map(doc => ({
-               id: doc.id,
-               ...doc.data()
-             }));
-             dispatch({ type: 'LOAD', payload: loaded });
-           }
-         };
-       
-         fetchAndMaybeReset();
-       }, []);
+    useEffect(() => {
+      const getMostRecentSunday = (date = new Date()) => {
+ const sunday = new Date(date);
+  sunday.setDate(date.getDate() - date.getDay()); // 0 = Sunday
+  sunday.setHours(0, 0, 0, 0);
+  return sunday;
+  };
+
+  const fetchAndMaybeReset = async () => {
+    const today = new Date();
+    const configDoc = doc(db, 'config', 'resetDates');
+    const configSnap = await getDoc(configDoc);
+    const lastResetStr = configSnap.exists() ? configSnap.data().sunday : null;
+
+    const lastResetDate = lastResetStr ? new Date(lastResetStr) : new Date(0); // fallback to epoch if no lastReset
+    const thisWeekSunday = getMostRecentSunday(today);
+
+    if (lastResetDate < thisWeekSunday) {
+      // Reset logic
+      const snapshot = await getDocs(colRef);
+      const batchDeletes = snapshot.docs.map(docItem =>
+        deleteDoc(doc(db, 'sunday-names', docItem.id))
+      );
+      await Promise.all(batchDeletes);
+
+      // Update reset date to today
+      await setDoc(configDoc, { sunday: today.toISOString() }, { merge: true });
+
+      // Empty local list
+      dispatch({ type: 'LOAD', day: 'sunday', payload: [] });
+    } else {
+      // Just load the list if reset not needed
+      const snapshot = await getDocs(colRef);
+      const loaded = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      dispatch({ type: 'LOAD', day: 'sunday', payload: loaded });
+    }
+  };
+
+  fetchAndMaybeReset();
+}, []);
 
 
     
@@ -69,11 +81,11 @@ export const Sunday = () => {
 
         if (editingId !== null) {
         await updateDoc(doc(db, 'sunday-names', editingId), { text: input });
-        dispatch({ type: 'EDIT_NAME', payload: { id: editingId, text: input } });
+        dispatch({ type: 'EDIT_NAME', day: 'sunday', payload: { id: editingId, text: input } });
         setEditingId(null);
       } else {
         const newDoc = await addDoc(colRef, { text: input, done: false });
-        dispatch({ type: 'ADD_NAME', payload: { id: newDoc.id, text: input, done: false } });
+        dispatch({ type: 'ADD_NAME', day: 'sunday', payload: { id: newDoc.id, text: input, done: false } });
       }
       setInput('');
     }
@@ -89,7 +101,7 @@ export const Sunday = () => {
 
          const handleRemove = async (id) => {
             await deleteDoc(doc(db, 'sunday-names', id));
-        dispatch({ type: 'REMOVE_NAME', payload: id });
+        dispatch({ type: 'REMOVE_NAME', day: 'sunday', payload: id });
   };
 
 

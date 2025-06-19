@@ -1,5 +1,5 @@
-import { addDoc, collection } from 'firebase/firestore';
-import { useState } from 'react';
+import { addDoc, collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import { db } from '../../firebase';
 import './tuesday.css';
 
@@ -16,6 +16,15 @@ const sessionsData = [
 ];
 
 
+const getMostRecentTuesday = (date = new Date()) => {
+  const tuesday = new Date(date);
+  const day = tuesday.getDay();
+  // Tuesday is day 2; shift backward to the most recent Tuesday
+  const diff = (day >= 2) ? day - 2 : day + 5; // days to subtract
+  tuesday.setDate(tuesday.getDate() - diff);
+  tuesday.setHours(0, 0, 0, 0);
+  return tuesday;
+};
 
 export const Tuesday = () => {
 const [sessions, setSessions] = useState(sessionsData); 
@@ -25,6 +34,57 @@ const [confirmation, setConfirmation] = useState('');
 
 const tuesdaySignupsRef = collection(db, 'tuesday-signups');
 
+useEffect(() => {
+    const loadSignups = async () => {
+      try {
+        // Step 1: Check last reset date (you can store in Firestore or localStorage)
+        const lastResetStr = localStorage.getItem('tuesdayLastReset');
+        const lastReset = lastResetStr ? new Date(lastResetStr) : null;
+        const recentTuesday = getMostRecentTuesday();
+
+        if (!lastReset || lastReset < recentTuesday) {
+          // Reset signups if last reset is before recent Tuesday
+
+          // Delete all signups in Firestore
+          const signupsSnapshot = await getDocs(tuesdaySignupsRef);
+          const batchDeletes = signupsSnapshot.docs.map((docSnap) => deleteDoc(doc(db, 'tuesday-signups', docSnap.id)));
+          await Promise.all(batchDeletes);
+
+          // Reset local storage date
+          localStorage.setItem('tuesdayLastReset', new Date().toISOString());
+
+          // Reset sessions state to initial (no runners)
+          setSessions(sessionsData);
+          return;
+        }
+
+        // Step 2: Otherwise, load saved signups from Firestore
+        const signupsSnapshot = await getDocs(tuesdaySignupsRef);
+
+        // Build a map from sessionId to runners
+        const sessionMap = sessionsData.map(session => ({
+          ...session,
+          runners: [],
+          signedUp: 0
+        }));
+
+        signupsSnapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          const session = sessionMap.find(s => s.id === data.sessionId);
+          if (session) {
+            session.runners.push(data.name);
+            session.signedUp++;
+          }
+        });
+
+        setSessions(sessionMap);
+      } catch (error) {
+        console.error('Error loading Tuesday signups:', error);
+      }
+    };
+
+    loadSignups();
+  }, []);
 
 const handleSignup = async () => {
   if (!selectedSessionId || !runnerName.trim()) return;
@@ -46,7 +106,7 @@ const handleSignup = async () => {
       )
     );
 
-    setConfirmation(`Congratulations, you are successfully registered with Coach ${selectedSession.coach}.`);
+    setConfirmation(`Congratulations, you are successfully registered with ${selectedSession.coach}.`);
 
     // ✅ Post to Firestore
     try {
@@ -115,6 +175,35 @@ NB: headphones and earbuds are not allowed on club runs.</li>
         {confirmation && <p className="confirmation">{confirmation}</p>}
 
         </div>
+        <div className="register">
+  <h2>Current Signups</h2>
+  {sessions.map(({ id, coach, distance, runners }) => (
+    <div
+      key={id}
+      style={{
+        border: '1px solid #ccc',
+        borderRadius: '8px',
+        padding: '1rem',
+        marginBottom: '1.5rem',
+        backgroundColor: '#f9f9f9'
+      }}
+    >
+      <h4 style={{ marginBottom: '0.5rem' }}>
+        Coach: {coach} <span style={{ fontWeight: 'normal' }}>({distance})</span>
+      </h4>
+      {runners.length > 0 ? (
+        <ul style={{ marginLeft: '1rem' }}>
+          {runners.map((runner, index) => (
+            <li key={index}>{runner}</li>
+          ))}
+        </ul>
+      ) : (
+        <p style={{ fontStyle: 'italic', color: '#555' }}>No runners signed up yet.</p>
+      )}
+    </div>
+  ))}
+</div>
+
         </>
     )
 }

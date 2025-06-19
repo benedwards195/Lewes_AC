@@ -14,7 +14,8 @@ import { db } from '../../firebase';
 import './monday.css';
 
 export const Monday = () => {
-    const {names, dispatch} = useContext(TrainingContext);
+    const {state, dispatch} = useContext(TrainingContext);
+    const names = state.monday;
     // const [members, setMembers] = useState('');
     const [input, setInput] = useState('');
     const [editingId, setEditingId] = useState(null);
@@ -22,31 +23,45 @@ export const Monday = () => {
     const colRef = collection(db, 'names-monday');
 
     useEffect(() => {
+  const getMostRecentMonday = (date = new Date()) => {
+    const day = date.getDay(); // 0 (Sun) to 6 (Sat)
+    const diff = (day + 6) % 7; // days since Monday (Monday=0)
+    const monday = new Date(date);
+    monday.setDate(date.getDate() - diff);
+    monday.setHours(0, 0, 0, 0);
+    return monday;
+  };
+
   const fetchAndMaybeReset = async () => {
-    const today = new Date().toISOString().split('T')[0]; 
+    const today = new Date();
     const configDoc = doc(db, 'config', 'resetDates');
     const configSnap = await getDoc(configDoc);
-    const lastReset = configSnap.exists() ? configSnap.data().monday : null;
+    const lastResetStr = configSnap.exists() ? configSnap.data().monday : null;
 
-    if (lastReset !== today) {
+    const lastResetDate = lastResetStr ? new Date(lastResetStr) : new Date(0); // fallback to epoch if no lastReset
+    const thisWeekMonday = getMostRecentMonday(today);
+
+    if (lastResetDate < thisWeekMonday) {
       // Reset logic
       const snapshot = await getDocs(colRef);
-      const batchDeletes = snapshot.docs.map(docItem => deleteDoc(doc(db, 'names-monday', docItem.id)));
+      const batchDeletes = snapshot.docs.map(docItem =>
+        deleteDoc(doc(db, 'names-monday', docItem.id))
+      );
       await Promise.all(batchDeletes);
 
-      // Update reset date
-      await setDoc(configDoc, { monday: today }, { merge: true });
+      // Update reset date to today (or thisWeekMonday)
+      await setDoc(configDoc, { monday: today.toISOString() }, { merge: true });
 
       // Empty local list
-      dispatch({ type: 'LOAD', payload: [] });
+      dispatch({ type: 'LOAD', day: 'monday', payload: [] });
     } else {
-      // Just load the list
+      // Just load the list if reset not needed
       const snapshot = await getDocs(colRef);
       const loaded = snapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
-      dispatch({ type: 'LOAD', payload: loaded });
+      dispatch({ type: 'LOAD', day: 'monday', payload: loaded });
     }
   };
 
@@ -70,11 +85,11 @@ export const Monday = () => {
 
       if (editingId !== null) {
         await updateDoc(doc(db, 'names-monday', editingId), { text: input });
-        dispatch({ type: 'EDIT_NAME', payload: { id: editingId, text: input } });
+        dispatch({ type: 'EDIT_NAME', day: 'monday', payload: { id: editingId, text: input } });
         setEditingId(null);
       } else {
         const newDoc = await addDoc(colRef, { text: input, done: false });
-        dispatch({ type: 'ADD_NAME', payload: { id: newDoc.id, text: input, done: false } });
+        dispatch({ type: 'ADD_NAME', day: 'monday', payload: { id: newDoc.id, text: input, done: false } });
       }
       setInput('');
     }
@@ -88,9 +103,10 @@ export const Monday = () => {
         }
     };
 
+
     const handleRemove = async (id) => {
     await deleteDoc(doc(db, 'names-monday', id));
-    dispatch({ type: 'REMOVE_NAME', payload: id });
+    dispatch({ type: 'REMOVE_NAME', day: 'monday', payload: id });
   };
 
     return (

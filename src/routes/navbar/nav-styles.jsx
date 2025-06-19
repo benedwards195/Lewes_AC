@@ -46,7 +46,7 @@ export const Hamburger = styled.button`
 `;
 
 export const NavLinks = styled.div`
-  display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
+  display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
   flex-direction: column;
   gap: 1rem;
 

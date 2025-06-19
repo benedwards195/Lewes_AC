@@ -11,7 +11,7 @@ export const Navbar = () => {
     <NavbarWrapper>
       <Hamburger onClick={toggleMenu}>☰</Hamburger>
 
-      <NavLinks isOpen={isOpen}>
+      <NavLinks $isOpen={isOpen}>
         <NavLink to="/" end onClick={() => setIsOpen(false)}>Home</NavLink>
         <NavLink to="/monday" onClick={() => setIsOpen(false)}>Monday Strength & Conditioning</NavLink>
         <NavLink to="/tuesday" onClick={() => setIsOpen(false)}>Tuesday Training</NavLink>

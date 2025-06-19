@@ -2,38 +2,69 @@ import { createContext, useEffect, useReducer } from "react";
 
 export const TrainingContext = createContext();
 
-const signUp = (state, action) => {
-    switch(action.type) {
-        case 'LOAD':
-            return action.payload;
-        case 'ADD_NAME':
-            return [...state, action.payload]
-        case 'REMOVE_NAME':
-            return state.filter((name) => name.id !== action.payload)
-        case 'EDIT_NAME':
-            return state.map((name) => name.id === action.payload.id ? {...name, text: action.payload.text } : name);
-            default:
-                return state;
-    }
-}
 
+// ✅ This goes here — outside the reducer
+const initialState = {
+    names: [],
+  monday: [],
+  thursday: [],
+  saturday: [],
+  sunday: [],
+};
+
+// ✅ Your reducer function
+const signUp = (state, action) => {
+  const { day, payload } = action;
+  switch (action.type) {
+    case 'LOAD':
+      return {
+        ...state,
+        [day]: payload,
+      };
+    case 'ADD_NAME':
+      return {
+        ...state,
+        [day]: [...state[day], payload],
+      };
+    case 'REMOVE_NAME':
+      return {
+        ...state,
+        [day]: state[day].filter((name) => name.id !== payload),
+      };
+    case 'EDIT_NAME':
+      return {
+        ...state,
+        [day]: state[day].map((name) =>
+          name.id === payload.id ? { ...name, text: payload.text } : name
+        ),
+      };
+    default:
+      return state;
+  }
+};
+
+// Your provider component
 export const SignUpProvider = ({ children }) => {
-     const [names, dispatch] = useReducer(signUp, []);
-    
-     useEffect(() => {
+  const [state, dispatch] = useReducer(signUp, initialState);
+
+  useEffect(() => {
     const stored = localStorage.getItem('names');
     if (stored) {
-      dispatch({ type: 'LOAD', payload: JSON.parse(stored) });
+      const parsed = JSON.parse(stored);
+      dispatch({ type: 'LOAD', day: 'monday', payload: parsed.monday || [] });
+      dispatch({ type: 'LOAD', day: 'thursday', payload: parsed.thursday || [] });
+      dispatch({ type: 'LOAD', day: 'saturday', payload: parsed.saturday || [] });
+      dispatch({ type: 'LOAD', day: 'sunday', payload: parsed.sunday || [] });
     }
   }, []);
 
-    useEffect(() => {
-    localStorage.setItem('names', JSON.stringify(names));
-  }, [names]);
+  useEffect(() => {
+    localStorage.setItem('names', JSON.stringify(state));
+  }, [state]);
 
-    return (
-        <TrainingContext.Provider value={{ names, dispatch }} >
-            {children}
-        </TrainingContext.Provider>
-    );
+  return (
+    <TrainingContext.Provider value={{ state, dispatch }}>
+      {children}
+    </TrainingContext.Provider>
+  );
 };
