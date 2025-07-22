@@ -6,12 +6,11 @@ import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 
 // Your Firebase configuration object (fill this with your actual config)
 const firebaseConfig = {
-  apiKey: "AIzaSyB5pxtVHbbrNWxAcRAxckP2KITl_pYV04Q",
-  authDomain: "lewes-ac.firebaseapp.com",
-  projectId: "lewes-ac",
-  storageBucket: "lewes-ac.appspot.com",
-  messagingSenderId: "948132451521",
-  appId: "1:948132451521:web:09284b61d49568d82e7040"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 
 // Initialize Firebase app
@@ -64,3 +63,5 @@ export async function getUserProfile(uid) {
     throw new Error("No user profile found");
   }
 }
+
+

@@ -176,3 +176,7 @@ h1 {
   text-decoration: underline;
 }
 
+.monday p {
+  width: 75%;
+}
+

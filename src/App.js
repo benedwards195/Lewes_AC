@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import DefaultRoute from './components/DefaultRoute.jsx';
 import { Layout } from './components/Layout.jsx';
+import PrivateRoute from './components/PrivateRoute.jsx';
 import { UserProvider } from './components/UserContext.jsx';
 import { Home } from './pages/home/Home.jsx';
 import { Login } from './pages/login/Login.jsx';
@@ -22,17 +23,61 @@ function App() {
       <Route path='/' element={<Layout />}>
       <Route index element={<DefaultRoute />} />
       <Route path="login" element={<Login />} />
-      <Route path="home" element={<Home />} />
-      <Route path="/signout" element={<Logout />} />
       <Route path="register" element={<Registration />} />
-      <Route path="monday" element={<Monday />} />
-      <Route path="tuesday" element={<Tuesday />} />
-      <Route path="thursday" element={<Thursday />} />
-      <Route path="saturday" element={<Saturday />} />
-      <Route path="sunday" element={<Sunday />} />
-      </Route>
+      <Route path="signout" element={<Logout />} />
+      
+     <Route
+            path="home"
+            element={
+              <PrivateRoute>
+                <Home />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="monday"
+            element={
+              <PrivateRoute>
+                <Monday />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="tuesday"
+            element={
+              <PrivateRoute>
+                <Tuesday />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="thursday"
+            element={
+              <PrivateRoute>
+                <Thursday />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="saturday"
+            element={
+              <PrivateRoute>
+                <Saturday />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="sunday"
+            element={
+              <PrivateRoute>
+                <Sunday />
+              </PrivateRoute>
+            }
+          />
+          
+        </Route>
       </Routes>
-      </UserProvider>
+    </UserProvider>
   )
      
 

@@ -23,25 +23,25 @@ export const Monday = () => {
     const colRef = collection(db, 'names-monday');
 
     useEffect(() => {
-  const getMostRecentMonday = (date = new Date()) => {
+  const getMostRecentWeekday = (weekday, date = new Date()) => {
     const day = date.getDay(); // 0 (Sun) to 6 (Sat)
-    const diff = (day + 6) % 7; // days since Monday (Monday=0)
-    const monday = new Date(date);
-    monday.setDate(date.getDate() - diff);
-    monday.setHours(0, 0, 0, 0);
-    return monday;
+    const diff = (day + 7 - weekday) % 7; // days since target weekday
+    const targetDay = new Date(date);
+    targetDay.setDate(date.getDate() - diff);
+    targetDay.setHours(0, 0, 0, 0);
+    return targetDay;
   };
 
   const fetchAndMaybeReset = async () => {
     const today = new Date();
     const configDoc = doc(db, 'config', 'resetDates');
     const configSnap = await getDoc(configDoc);
-    const lastResetStr = configSnap.exists() ? configSnap.data().monday : null;
+    const lastResetStr = configSnap.exists() ? configSnap.data().tuesday : null;
 
-    const lastResetDate = lastResetStr ? new Date(lastResetStr) : new Date(0); // fallback to epoch if no lastReset
-    const thisWeekMonday = getMostRecentMonday(today);
+    const lastResetDate = lastResetStr ? new Date(lastResetStr) : new Date(0);
+    const thisWeekTuesday = getMostRecentWeekday(2, today);
 
-    if (lastResetDate < thisWeekMonday) {
+    if (lastResetDate < thisWeekTuesday) {
       // Reset logic
       const snapshot = await getDocs(colRef);
       const batchDeletes = snapshot.docs.map(docItem =>
@@ -49,13 +49,13 @@ export const Monday = () => {
       );
       await Promise.all(batchDeletes);
 
-      // Update reset date to today (or thisWeekMonday)
-      await setDoc(configDoc, { monday: today.toISOString() }, { merge: true });
+      // Update reset date to this Tuesday midnight
+      await setDoc(configDoc, { tuesday: thisWeekTuesday.toISOString() }, { merge: true });
 
       // Empty local list
       dispatch({ type: 'LOAD', day: 'monday', payload: [] });
     } else {
-      // Just load the list if reset not needed
+      // Load current list if no reset needed
       const snapshot = await getDocs(colRef);
       const loaded = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -67,6 +67,7 @@ export const Monday = () => {
 
   fetchAndMaybeReset();
 }, []);
+
 
 
     const handleSubmit = async () => {      
@@ -111,7 +112,7 @@ export const Monday = () => {
 
     return (
         <>
-        <div>
+        <div className='monday'>
         <h1>Monday Strength & Conditioning</h1>
         <p>Improve many of the attibutes you need to run well – strength, mobility, stabilty, coordination and resistance to injury – with our Monday evening sessions.</p>
         <p>These sessions will be held at the Leisure Centre school gym or Lewes AC's track from 6-7pm and led by qualified coaches. The sessions comprise stretching, drills, plyometrics and circuit training.</p>

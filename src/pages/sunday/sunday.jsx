@@ -37,6 +37,9 @@ export const Sunday = () => {
 
     const lastResetDate = lastResetStr ? new Date(lastResetStr) : new Date(0); // fallback to epoch if no lastReset
     const thisWeekSunday = getMostRecentSunday(today);
+    thisWeekSunday.setDate(thisWeekSunday.getDate() + 1); // Shift to Monday 00:00
+    thisWeekSunday.setHours(0, 0, 0, 0);
+
 
     if (lastResetDate < thisWeekSunday) {
       // Reset logic
@@ -47,7 +50,7 @@ export const Sunday = () => {
       await Promise.all(batchDeletes);
 
       // Update reset date to today
-      await setDoc(configDoc, { sunday: today.toISOString() }, { merge: true });
+      await setDoc(configDoc, { sunday: thisWeekSunday.toISOString() }, { merge: true });
 
       // Empty local list
       dispatch({ type: 'LOAD', day: 'sunday', payload: [] });
@@ -107,6 +110,7 @@ export const Sunday = () => {
 
     return (
         <>
+        <div className='sunday'>
                 <h1>Sunday Trail Running</h1>
         <p>Monthly trail runs in 3 ability groups to help you achieve your goals. Different pace and distances but all with a technical focus. We will also introduce other aspects of trail running to enhance your enjoyment when out on the trails.</p>
         <h4 className="intro">To sign up for a session, add your name to the list below</h4>
@@ -137,6 +141,7 @@ export const Sunday = () => {
             </li>
             ))}
             </ul>
+        </div>
         </div>
         </>
     )

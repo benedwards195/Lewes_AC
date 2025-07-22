@@ -74,6 +74,8 @@ const [errors, setErrors] = useState({})
 
     }
 
+    
+
     return (
         <>
         <div className="auth-form">

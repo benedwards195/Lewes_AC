@@ -40,6 +40,8 @@ export const Saturday = () => {
 
     const lastResetDate = lastResetStr ? new Date(lastResetStr) : new Date(0); // fallback to epoch if no lastReset
     const thisWeekSaturday = getMostRecentSaturday(today);
+    thisWeekSaturday.setDate(thisWeekSaturday.getDate() + 1); // Move to Sunday 00:00
+    thisWeekSaturday.setHours(0, 0, 0, 0)
 
     if (lastResetDate < thisWeekSaturday) {
       // Reset logic
@@ -50,7 +52,7 @@ export const Saturday = () => {
       await Promise.all(batchDeletes);
 
       // Update reset date to today
-      await setDoc(configDoc, { saturday: today.toISOString() }, { merge: true });
+      await setDoc(configDoc, { saturday: thisWeekSaturday.toISOString() }, { merge: true });
 
       // Empty local list
       dispatch({ type: 'LOAD', day: 'saturday', payload: [] });
@@ -108,11 +110,11 @@ export const Saturday = () => {
   };
 
     return (
-        <>
+        <div className='saturday'>
         <h1>Saturday Training</h1>
         <h3 className="intro">To sign up for a session, add your name to the list below</h3>
         <p> <b>Improvers/Parkrun:</b> Starting at 9am and lasting approx. 1 hour, our coached improvers' sessions are designed as a friendly, fun-filled introduction to track-based training but can also suit those returning from injury or absence, or who don't yet feel ready for a Thursday-night session. Please sign up below.
-NB: on the first Saturday of each month, in place of the usual improvers' track session, Lewes AC members are encouraged instead to attend a nominated local parkrun (see the weekly calendar below for the designated venue, but no need to sign up.)</p>
+    NB: on the first Saturday of each month, in place of the usual improvers' track session, Lewes AC members are encouraged instead to attend a nominated local parkrun (see the weekly calendar below for the designated venue, but no need to sign up.)</p>
         <p><b>Solo training:</b> Club runners who want to do their own track work are welcome to use the track between 9am and 2pm. Coaches will be on hand to help with advice and training assistance as needed. Please sign up below.</p>
         <p className='signup'>SIGN UP BELOW:</p>
         <div className='register'>
@@ -142,6 +144,6 @@ NB: on the first Saturday of each month, in place of the usual improvers' track 
             ))}
             </ul>
         </div>
-        </>
+        </div>
     )
 }

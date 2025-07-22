@@ -52,7 +52,7 @@ export const Thursday = () => {
       await Promise.all(batchDeletes);
 
       // Update reset date to today
-      await setDoc(configDoc, { thursday: today.toISOString() }, { merge: true });
+      await setDoc(configDoc, { thursday: thisWeekThursday.toISOString() }, { merge: true });
 
       // Empty local list
       dispatch({ type: 'LOAD', day: 'thursday', payload: [] });

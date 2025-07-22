@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { db } from '../../firebase';
 import './tuesday.css';
@@ -35,6 +35,7 @@ const [confirmation, setConfirmation] = useState('');
 const tuesdaySignupsRef = collection(db, 'tuesday-signups');
 
 useEffect(() => {
+  
     const loadSignups = async () => {
       try {
         // Step 1: Check last reset date (you can store in Firestore or localStorage)
@@ -56,6 +57,7 @@ useEffect(() => {
           // Reset sessions state to initial (no runners)
           setSessions(sessionsData);
           return;
+          
         }
 
         // Step 2: Otherwise, load saved signups from Firestore
@@ -84,6 +86,7 @@ useEffect(() => {
     };
 
     loadSignups();
+    
   }, []);
 
 const handleSignup = async () => {
@@ -112,6 +115,7 @@ const handleSignup = async () => {
     try {
       await addDoc(tuesdaySignupsRef, {
         name: runnerName.trim(),
+        nameKey: runnerName.trim().toLowerCase(),
         sessionId: selectedSession.id,
         coach: selectedSession.coach,
         distance: selectedSession.distance,
@@ -124,14 +128,81 @@ const handleSignup = async () => {
 
   setRunnerName('');
   setSelectedSessionId('');
+  console.log('Signing up:', runnerName.trim(), 'to session', selectedSessionId);
+
 };
+
+const handleRemove = async (runnerNameToRemove, sessionId) => {
+  if (!runnerNameToRemove) {
+    alert("Runner name is required.");
+    return;
+  }
+
+  const runnerKey = runnerNameToRemove.trim().toLowerCase();
+
+  // Query signups for the given session
+  const q = query(
+  tuesdaySignupsRef, 
+  where('sessionId', '==', sessionId), 
+  where('nameKey', '==', runnerKey)
+);
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) {
+  alert("You don't seem to be signed up for this session.");
+  return;
+}
+
+const docToDelete = snapshot.docs[0];
+
+  // Find the doc matching the nameKey (case-insensitive)
+  // const docToDelete = snapshot.docs.find(
+  //   (doc) => doc.data().nameKey === runnerKey
+  // );
+
+  // if (!docToDelete) {
+  //   alert("You don't seem to be signed up for this session.");
+  //   return;
+  // }
+
+  try {
+    await deleteDoc(doc(db, "tuesday-signups", docToDelete.id));
+    setSessions((prev) =>
+      prev.map((session) =>
+        session.id === sessionId
+          ? { 
+              ...session, 
+              runners: session.runners.filter((r) => r !== docToDelete.data().name),
+              signedUp: session.signedUp - 1
+            }
+          : session
+      )
+    );
+    setConfirmation('You have been removed from the session.');
+    setRunnerName('');
+  } catch (error) {
+    console.error("Error removing document:", error);
+  }
+  console.log('Removing:', runnerNameToRemove, 'from session', sessionId);
+};
+
+const getNextTuesday = () => {
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0 (Sun) - 6 (Sat)
+  const daysUntilTuesday = (9 - dayOfWeek) % 7 || 7;
+  const nextTuesday = new Date(today);
+  nextTuesday.setDate(today.getDate() + daysUntilTuesday);
+  return nextTuesday;
+}
+
+const nextTuesday = getNextTuesday();
 
 
     return (
         <>
-        <div>
+        <div className="Tuesday">
         <h1>Tuesday Training</h1>
-        <h4 className="intro">To sign up for a session, click/tap on the Edit button above right</h4>
+        <h4 className="intro">To sign up for a session, add your name to the list below. If you can no longer make it, click remove next to your name. </h4>
         <p>All groups will start from the <b>clubhouse</b> at the Lewes AC track at 6.30pm (except for monthly pub runs and, on the third Tuesday of the month (Apr-Aug inclusive) when we will offer several 'away from the clubhouse' starts from a clearly stated meeting point on the outskirts of town to enable more direct access to the Downs).</p>
         <ul>
             <li>Each session will last about an hour – so, in general, a longer distance means a faster pace.</li>
@@ -142,7 +213,7 @@ NB: headphones and earbuds are not allowed on club runs.</li>
         </div> 
 
         <div className="register">
-            <p className="date">TUESDAY 10 JUNE</p>
+            <p className="date">{nextTuesday.toDateString()}</p>
             <p>All groups will be starting at 6.30pm from the Clubhouse at the track (except for the Post-Beginners Progression Course)</p>
             <p>When signing up please include your surname</p>
 
@@ -192,11 +263,21 @@ NB: headphones and earbuds are not allowed on club runs.</li>
         Coach: {coach} <span style={{ fontWeight: 'normal' }}>({distance})</span>
       </h4>
       {runners.length > 0 ? (
-        <ul style={{ marginLeft: '1rem' }}>
-          {runners.map((runner, index) => (
-            <li key={index}>{runner}</li>
-          ))}
-        </ul>
+      <ul style={{ marginLeft: '1rem' }}>
+  {runners.map((runner, index) => (
+  <li key={index}>
+    {runner}
+  
+    <button
+  style={{ marginLeft: '0.5rem', padding: '0.2rem 0.5rem', fontSize: '0.8rem', cursor: 'pointer' }}
+  onClick={() => handleRemove(runner, id)}  
+>
+  Remove
+</button>
+  </li>
+  ))}
+</ul>
+
       ) : (
         <p style={{ fontStyle: 'italic', color: '#555' }}>No runners signed up yet.</p>
       )}

@@ -1,7 +1,11 @@
-.intro {
+ .saturday p {
+    width: 75%;
+ }
+
+.saturday .intro {
     color: red;
 }
-.signup {
+.saturday .signup {
     font-weight: bold;
 }
 
