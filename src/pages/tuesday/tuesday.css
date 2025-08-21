@@ -26,8 +26,7 @@ select {
 input {
   margin-left: 1rem;
   width: 80%;
-  /* max-width: 400px; Optional max width */
-  box-sizing: border-box; /* So padding doesn't add to total width */
+  box-sizing: border-box; 
 }
 
 .confirmation {

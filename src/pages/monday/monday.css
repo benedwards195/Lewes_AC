@@ -1,61 +1,8 @@
-/* .signup {
-    color: red;
-}
-li {
-    
-    font-weight: bold;
-} */
-/* .register {
-    background-color: green;
-} */
-/* .roster {
-background-color: grey;
-color: white
-} */
-
-/* li {
-  display: flex;
-  justify-content: space-between; /* pushes content to edges */
-  /* align-items: center;
-  font-weight: bold;
-  margin-bottom: 8px;
-} */ 
-
- /* .actions {
-  display: flex;
-  gap: 10px; space between Edit and Remove 
-}  */
-
-/* .edit {
-  background-color: lightblue;
-  color: black;
-  font-weight: bold;
-  border: none;
-  padding: 5px 10px;
-}
-
-.remove {
-  background-color: crimson;
-  color: white;
-  font-weight: bold;
-  border: none;
-  padding: 5px 10px;
-}
-
-.edit:hover, .remove:hover {
-    background-color: yellow;
-    color: black;
-    text-decoration: underline;
-}
-h1 {
-  text-align: center;
-} */
-
 .register {
   max-width: 400px;
   margin: 2rem auto;
   padding: 1.5rem;
-  background-color: #f3f4f6; /* light gray */
+  background-color: #f3f4f6; 
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
@@ -71,7 +18,7 @@ h1 {
 }
 
 .register input:focus {
-  border-color: #2563eb; /* blue */
+  border-color: #2563eb; 
   outline: none;
   box-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
 }
@@ -96,7 +43,7 @@ h1 {
 }
 
 .register button:last-child {
-  background-color: #6b7280; /* gray */
+  background-color: #6b7280; 
   color: white;
 }
 
@@ -134,10 +81,6 @@ h1 {
   text-decoration: underline;
 }
 
-/* .remove {
-  background-color: red;
-  color: white;
-} */
 
 .remove:hover {
   color: black;
@@ -154,8 +97,7 @@ h1 {
 }
 
 .actions .edit {
-  background-color: #60a5fa !important; /* light blue */
-  color: black;
+  background-color: #60a5fa !important; 
   margin-right: 0.5rem;
 }
 
@@ -166,7 +108,7 @@ h1 {
 }
 
 .actions .remove {
-  background-color: #dc2626 !important; /* red */
+  background-color: #dc2626 !important; 
   color: white;
 }
 

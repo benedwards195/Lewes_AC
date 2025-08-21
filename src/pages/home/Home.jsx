@@ -8,16 +8,7 @@ export const Home = () => {
     return (
       
     <div className="home-container">
-      {/* Banner */}
-      {/* <div className="banner">
-        <h1 className="club-name">Lewes Running Club</h1>
-        <Link to="/signout" className="signout-link">Sign Out</Link>
-      </div>
 
-      {/* Red Divider */}
-      {/* <div className="red-divider"></div> */} 
-
-      {/* Welcome Section */}
       <section className="welcome">
         <h2>Welcome, {profile?.firstName || user?.email}, to Lewes Athletics Club <img 
                 src={logo} 
