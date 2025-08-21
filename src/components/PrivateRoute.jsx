@@ -16,7 +16,7 @@ export default function PrivateRoute({ children }) {
     return () => unsubscribe();
   }, []);
 
-  // Wait until Firebase finishes checking auth
+ 
   if (!authChecked) return <p>Loading...</p>;
 
   return user ? children : <Navigate to="/login" replace />;

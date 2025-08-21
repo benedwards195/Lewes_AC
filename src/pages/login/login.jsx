@@ -14,7 +14,7 @@ export const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  // 🔍 Check if already authenticated
+  // 🔍 Checks if already authenticated
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -23,10 +23,10 @@ export const Login = () => {
     return () => unsubscribe();
   }, []);
 
-  // 🕗 While checking auth status
+
   if (checking) return <p>Loading...</p>;
 
-  // ✅ Redirect if user is already logged in
+  // Redirects if user is already logged in
   if (user) {
     return <Navigate to="/home" replace />;
   }

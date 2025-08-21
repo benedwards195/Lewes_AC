@@ -19,7 +19,6 @@ const sessionsData = [
 const getMostRecentTuesday = (date = new Date()) => {
   const tuesday = new Date(date);
   const day = tuesday.getDay();
-  // Tuesday is day 2; shift backward to the most recent Tuesday
   const diff = (day >= 2) ? day - 2 : day + 5; // days to subtract
   tuesday.setDate(tuesday.getDate() - diff);
   tuesday.setHours(0, 0, 0, 0);
@@ -38,32 +37,31 @@ useEffect(() => {
   
     const loadSignups = async () => {
       try {
-        // Step 1: Check last reset date (you can store in Firestore or localStorage)
         const lastResetStr = localStorage.getItem('tuesdayLastReset');
         const lastReset = lastResetStr ? new Date(lastResetStr) : null;
         const recentTuesday = getMostRecentTuesday();
 
         if (!lastReset || lastReset < recentTuesday) {
-          // Reset signups if last reset is before recent Tuesday
+          // Resets signups if last reset is before recent Tuesday
 
-          // Delete all signups in Firestore
+          // Deletes all signups in Firestore
           const signupsSnapshot = await getDocs(tuesdaySignupsRef);
           const batchDeletes = signupsSnapshot.docs.map((docSnap) => deleteDoc(doc(db, 'tuesday-signups', docSnap.id)));
           await Promise.all(batchDeletes);
 
-          // Reset local storage date
+          // Resets local storage date
           localStorage.setItem('tuesdayLastReset', new Date().toISOString());
 
-          // Reset sessions state to initial (no runners)
+          // Resets sessions state to initial (no runners)
           setSessions(sessionsData);
           return;
           
         }
 
-        // Step 2: Otherwise, load saved signups from Firestore
+       
         const signupsSnapshot = await getDocs(tuesdaySignupsRef);
 
-        // Build a map from sessionId to runners
+        // Builds map from sessionId to runners
         const sessionMap = sessionsData.map(session => ({
           ...session,
           runners: [],
@@ -111,7 +109,7 @@ const handleSignup = async () => {
 
     setConfirmation(`Congratulations, you are successfully registered with ${selectedSession.coach}.`);
 
-    // ✅ Post to Firestore
+    // Posts to Firestore
     try {
       await addDoc(tuesdaySignupsRef, {
         name: runnerName.trim(),
@@ -155,15 +153,6 @@ const handleRemove = async (runnerNameToRemove, sessionId) => {
 
 const docToDelete = snapshot.docs[0];
 
-  // Find the doc matching the nameKey (case-insensitive)
-  // const docToDelete = snapshot.docs.find(
-  //   (doc) => doc.data().nameKey === runnerKey
-  // );
-
-  // if (!docToDelete) {
-  //   alert("You don't seem to be signed up for this session.");
-  //   return;
-  // }
 
   try {
     await deleteDoc(doc(db, "tuesday-signups", docToDelete.id));

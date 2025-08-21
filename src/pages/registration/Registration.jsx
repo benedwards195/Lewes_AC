@@ -56,10 +56,10 @@ const [errors, setErrors] = useState({})
     );
 
 
-    // localStorage.setItem("user", JSON.stringify(user));
+
     console.log("Registered user:", user);
     alert("User registered!");
-    // Optionally redirect after signup
+   
       navigate('/home');
 
   } catch (error) {

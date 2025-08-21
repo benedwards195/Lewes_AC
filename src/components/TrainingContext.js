@@ -3,7 +3,7 @@ import { createContext, useEffect, useReducer } from "react";
 export const TrainingContext = createContext();
 
 
-// ✅ This goes here — outside the reducer
+
 const initialState = {
     names: [],
   monday: [],
@@ -12,7 +12,7 @@ const initialState = {
   sunday: [],
 };
 
-// ✅ Your reducer function
+
 const signUp = (state, action) => {
   const { day, payload } = action;
   switch (action.type) {
@@ -43,7 +43,7 @@ const signUp = (state, action) => {
   }
 };
 
-// Your provider component
+
 export const SignUpProvider = ({ children }) => {
   const [state, dispatch] = useReducer(signUp, initialState);
 

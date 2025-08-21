@@ -16,7 +16,6 @@ import './monday.css';
 export const Monday = () => {
     const {state, dispatch} = useContext(TrainingContext);
     const names = state.monday;
-    // const [members, setMembers] = useState('');
     const [input, setInput] = useState('');
     const [editingId, setEditingId] = useState(null);
 

@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 
 
-// Your Firebase configuration object (fill this with your actual config)
+//  Firebase configuration object (fill this with your actual config)
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
@@ -28,7 +28,7 @@ export const signUpUser = async (email, password, username, address, postcode, f
     const user = userCredential.user;
 
     try {
-    // Store additional user info in Firestore under "users" collection with user's uid
+    // Stores additional user info in Firestore under "users" collection with user's uid
     await setDoc(doc(db, "users", user.uid), {
       username,
       address,
@@ -42,7 +42,6 @@ export const signUpUser = async (email, password, username, address, postcode, f
     return user;
   } catch (firestoreError) {
       console.error("Firestore write failed:", firestoreError);
-      // You might still want to proceed or clean up the Auth user here.
     }
 
     return user;
@@ -52,7 +51,6 @@ export const signUpUser = async (email, password, username, address, postcode, f
   }
 };
 
-// Optional: function to get user profile from Firestore by uid
 export async function getUserProfile(uid) {
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);

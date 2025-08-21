@@ -1,13 +1,13 @@
 
 import {
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    getDoc,
-    getDocs,
-    setDoc,
-    updateDoc
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc
 } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
 import { TrainingContext } from '../../components/TrainingContext';
@@ -49,13 +49,13 @@ export const Sunday = () => {
       );
       await Promise.all(batchDeletes);
 
-      // Update reset date to today
+      // Updates reset date to today
       await setDoc(configDoc, { sunday: thisWeekSunday.toISOString() }, { merge: true });
 
       // Empty local list
       dispatch({ type: 'LOAD', day: 'sunday', payload: [] });
     } else {
-      // Just load the list if reset not needed
+      // Loads the list if reset not needed
       const snapshot = await getDocs(colRef);
       const loaded = snapshot.docs.map(doc => ({
         id: doc.id,

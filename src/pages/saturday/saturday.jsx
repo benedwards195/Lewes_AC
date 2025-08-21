@@ -1,12 +1,12 @@
 import {
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    getDoc,
-    getDocs,
-    setDoc,
-    updateDoc
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc
 } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
 import { TrainingContext } from '../../components/TrainingContext';
@@ -16,7 +16,6 @@ import './saturday.css';
 export const Saturday = () => {
      const {state, dispatch} = useContext(TrainingContext);
      const names = state.saturday;
-        // const [members, setMembers] = useState('');
         const [input, setInput] = useState('');
         const [editingId, setEditingId] = useState(null);
 

@@ -17,7 +17,6 @@ import './thursday.css';
 export const Thursday = () => {
     const {state, dispatch} = useContext(TrainingContext);
     const names = state.thursday;
-    // const [members, setMembers] = useState('');
     const [input, setInput] = useState('');
     const [editingId, setEditingId] = useState(null);
 
@@ -51,13 +50,13 @@ export const Thursday = () => {
       );
       await Promise.all(batchDeletes);
 
-      // Update reset date to today
+      // Updates reset date to today
       await setDoc(configDoc, { thursday: thisWeekThursday.toISOString() }, { merge: true });
 
       // Empty local list
       dispatch({ type: 'LOAD', day: 'thursday', payload: [] });
     } else {
-      // Just load the list if reset not needed
+      // Loads the list if reset not needed
       const snapshot = await getDocs(colRef);
       const loaded = snapshot.docs.map(doc => ({
         id: doc.id,

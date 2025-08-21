@@ -1,4 +1,3 @@
-// useSignups.js
 import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
